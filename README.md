@@ -1,6 +1,21 @@
 # Example for Kompassi OAuth2 SSO
 
-This is an example of OAuth2 authentication against the [Kompassi](/tracon/kompassi) event management system. The `kompassi_oauth2` directory contains reusable code for your Django application.
+**Problem**: Kompassi now lives at [kompassi.eu](https://kompassi.eu) but we need to do cookie based authentication for Atlassian products at eg. [confluence.tracon.fi](https://confluence.tracon.fi).
+
+**Solution**: Rip all Crowd related code from Kompassi into an external application that authenticates against Kompassi using OAuth2.
+
+So basically
+
+1. Try to access a protected resource under `confluence.tracon.fi`
+2. Get redirected to `https://atlasso.tracon.fi/crowd`
+3. Notice you have no session, get redirected to `https://atlasso.tracon.fi/oauth2/login`
+4. OAuth2 session is setup, get redirected to `https://kompassi.eu/oauth2/authorize`
+5. Notice you have no session, get redirected to `https://kompassi.eu/login`
+6. Log in using whatever method you like
+7. Get redirected via `https://atlasso.tracon.fi/oauth2/callback` to `https://atlasso.tracon.fi/crowd`
+8. Get a cookie, get redirected to `https://confluence.tracon.fi`
+
+The rest of this README needs update.
 
 ## Getting started
 
