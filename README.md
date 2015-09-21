@@ -1,4 +1,4 @@
-# OAuth2 to Crowd SSO adapter for Kompassi
+# OAuth2 to Atlassian Crowd SSO adapter for Kompassi
 
 **Problem**: Kompassi now lives at [kompassi.eu](https://kompassi.eu) but we need to do cookie based authentication for Atlassian products at eg. [confluence.tracon.fi](https://confluence.tracon.fi).
 
