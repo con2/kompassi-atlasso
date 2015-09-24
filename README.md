@@ -15,13 +15,11 @@ So basically
 7. Get redirected via `https://atlasso.tracon.fi/oauth2/callback` to `https://atlasso.tracon.fi/crowd`
 8. Get a cookie, get redirected to `https://confluence.tracon.fi`
 
-The rest of this README needs update.
-
 ## Getting started
 
-First, make sure `kompassi.dev` and `ssoexample.dev` resolve to localhost via `/etc/hosts`:
+First, make sure `kompassi.dev` and `atlassodev.tracon.fi` resolve to localhost via `/etc/hosts`:
 
-    127.0.0.1 localhost kompassi.dev ssoexample.dev
+    127.0.0.1 localhost kompassi.dev atlassodev.tracon.fi
 
 Next, install and run development instance of [Kompassi](/tracon/kompassi) if you don't yet have one:
 
@@ -39,12 +37,12 @@ Next, install and run development instance of [Kompassi](/tracon/kompassi) if yo
 Now, in another terminal, install and run this example:
 
     source venv-kompassi/bin/activate
-    git clone https://github.com/tracon/kompassi-oauth2-example.git
-    cd kompassi-oauth2-example
+    git clone https://github.com/tracon/kompassi-atlasso.git
+    cd kompassi-atlasso
     pip install -r requirements.txt
     ./manage.py migrate
     ./manage.py runserver 127.0.0.1:8001
-    iexplore http://ssoexample.dev:8001
+    iexplore http://atlassodev.tracon.fi:8001
 
 When you click the "Go to protected page" link, you should be transferred to your Kompassi development instance. Log in with user `mahti` and password `mahti`, authorize the example application to receive your user info, and you should see the protected page.
 
