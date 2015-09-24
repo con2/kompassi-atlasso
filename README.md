@@ -50,19 +50,7 @@ When you click the "Go to protected page" link, you should be transferred to you
 
 ## Configuration
 
-```python
-AUTHENTICATION_BACKENDS = (
-    'kompassi_oauth2.backends.KompassiOAuth2AuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
-KOMPASSI_OAUTH2_AUTHORIZATION_URL = 'http://kompassi.dev:8000/oauth2/authorize'
-KOMPASSI_OAUTH2_TOKEN_URL = 'http://kompassi.dev:8000/oauth2/token'
-KOMPASSI_OAUTH2_CLIENT_ID = 'kompassi_insecure_test_client_id'
-KOMPASSI_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_test_client_secret'
-KOMPASSI_OAUTH2_SCOPE = ['read']
-KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8000/api/v2/people/me'
-```
+You need an OAuth2 application in Kompassi (get it from the admin UI) and an application in Crowd (get it from the setup UI). See `atlasso/settings.py`.
 
 ## Development gotchas
 
@@ -76,21 +64,73 @@ Technically it's horribly wrong to use OAuth2 over insecure HTTP. However, it's 
 2. Run this example `localhost:8001`
 3. Try to log in
 
-Expected results: You are logged in
+**Expected results**: You are logged in
 
-Actual results: 500 Internal Server Error due to session not having `oauth_state` in `/oauth2/callback`
+**Actual results**: 500 Internal Server Error due to session not having `oauth_state` in `/oauth2/callback`
 
-Explanation: Both applications share the same set of cookies due to cookies being matched solely on the host name, not the port
+**Explanation**: Both applications share the same set of cookies due to cookies being matched solely on the host name, not the port
 
-Workaround: Add something like this to `/etc/hosts` and use `http://kompassi.dev:8000` and `http://ssoexample.dev:8001` instead.
+**Workaround**: Add something like this to `/etc/hosts` and use `http://kompassi.dev:8000` and `http://atlassodev.tracon.fi:8001` instead.
 
-    127.0.0.1 localhost kompassi.dev ssoexample.dev
+    127.0.0.1 localhost kompassi.dev atlassodev.tracon.fi
+
+### Cookie domain must match that of Crowd and Confluence
+
+For the client app to see the `crowd.token_key` cookie, it needs to be in the `tracon.fi` domain.
+
+**That** is why we picked `atlassodev.tracon.fi` above, not eg. `atlasso.dev`.
+
+For your development pleasure, `kompassidev.tracon.fi` deals out cookies that do not have the "secure" flag set so that you don't need to access your development instance via HTTPS.
+
+### Validation factors
+
+Crowd requires that you use the same validation factors for refreshing the session as you did for setting the session up. The validation factors used in our installation are as follows:
+
+* `remote_address`: Always `127.0.0.1`.
+* `X-Forwarded-For`: The public, Internet-facing IP address of the browser.
+
+In `settings.py` there are lambdas that are used to extract this information from the request object. What the lambdas should do depends on your setup:
+
+#### Production installation behind a reverse proxy
+
+It is recommended to install Django apps behind an Apache or nginx proxy. In this case, `REMOTE_ADDR` is always `127.0.0.1` and the real IP address is in the `X-Forwarded-For` HTTP header.
+
+```python
+KOMPASSI_CROWD_VALIDATION_FACTORS = {
+    'remote_address': lambda request: '127.0.0.1',
+    'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
+}
+```
+
+#### Production or development installation without a proxy
+
+If the Django instance is not behind a proxy and sees your public, Internet-facing IP address in `REMOTE_ADDR`, you should fake being behind a proxy as our Crowd, Confluence etc. installations **are** behind a proxy.
+
+```python
+KOMPASSI_CROWD_VALIDATION_FACTORS = {
+    'remote_address': lambda request: '127.0.0.1',
+    'X-Forwarded-For': lambda request: request.META['REMOTE_ADDR'],
+}
+```
+
+NB. The Django development server is not suitable for use in production, but you might use `gunicorn` or `uwsgi`.
+
+#### Development server in a private IP address or localhost
+
+If your development server does not get your Internet-facing IP address in either `X-Forwarded-For` or `REMOTE_ADDR`, you need to fake it in the validation factors. This is usually the case for local development setups where you have the Django instance running in either `localhost` or a (virtual) machine behind a NAT.
+
+```python
+KOMPASSI_CROWD_VALIDATION_FACTORS = {
+    'remote_address': lambda request: '127.0.0.1',
+    'X-Forwarded-For': lambda request: '84.248.69.106', # the Internet-facing IP address of your browser
+}
+```
 
 ## License
 
     The MIT License (MIT)
 
-    Copyright (c) 2014–2015 Santtu Pajukanta
+    Copyright © 2014–2015 Santtu Pajukanta
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

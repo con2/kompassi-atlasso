@@ -1,10 +1,13 @@
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-SECRET_KEY = '9()(lzm)jdr$szjfdx8^^#j_6efj@d&$9pb6l2h&=udxom3(bn'
+def mkpath(*parts):
+    return os.path.abspath(os.path.join(BASE_DIR, *parts))
+
+SECRET_KEY = r'y6LA_G4TmWXwnueq4wdAam=XseKXV=3X3HHJbQRcj1K'
 
 DEBUG = True
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 if DEBUG:
     # XXX Monkey patch is_secure_transport to allow development over insecure HTTP
@@ -27,7 +30,7 @@ if DEBUG:
     ]:
         module.is_secure_transport = fake_is_secure_transport
 
-ALLOWED_HOSTS = ['ssoexample.tracon.fi']
+ALLOWED_HOSTS = ['.tracon.fi']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -37,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'kompassi_oauth2_example',
+    'atlasso',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,18 +58,20 @@ AUTHENTICATION_BACKENDS = (
 )
 
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+    ('pyjade.ext.django.Loader',(
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
 )
 
-ROOT_URLCONF = 'kompassi_oauth2_example.urls'
+ROOT_URLCONF = 'atlasso.urls'
 
-WSGI_APPLICATION = 'kompassi_oauth2_example.wsgi.application'
+WSGI_APPLICATION = 'atlasso.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'kompassi_oauth2_example.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'atlasso.sqlite3'),
     }
 }
 
@@ -114,6 +119,11 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
         },
+        'atlasso': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': True
+        },
     }
 }
 
@@ -126,13 +136,32 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = mkpath('static')
 
-KOMPASSI_OAUTH2_AUTHORIZATION_URL = 'http://kompassi.dev:8000/oauth2/authorize'
-KOMPASSI_OAUTH2_TOKEN_URL = 'http://kompassi.dev:8000/oauth2/token'
+KOMPASSI_INSTALLATION_SLUG = 'turskadev'
+KOMPASSI_HOST = 'http://kompassi.dev:8000'
+KOMPASSI_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_HOST}/oauth2/authorize'.format(**locals())
+KOMPASSI_OAUTH2_TOKEN_URL = '{KOMPASSI_HOST}/oauth2/token'.format(**locals())
 KOMPASSI_OAUTH2_CLIENT_ID = 'kompassi_insecure_test_client_id'
 KOMPASSI_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_test_client_secret'
 KOMPASSI_OAUTH2_SCOPE = ['read']
-KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8000/api/v2/people/me'
+KOMPASSI_API_V2_USER_INFO_URL = '{KOMPASSI_HOST}/api/v2/people/me'.format(**locals())
+KOMPASSI_API_V2_EVENT_INFO_URL_TEMPLATE = '{kompassi_host}/api/v2/events/{event_slug}'
+KOMPASSI_ADMIN_GROUP = 'admins'
+KOMPASSI_ACCESS_GROUP = 'crowd-users'
+
+KOMPASSI_CROWD_URL = 'https://crowd.tracon.fi/crowd'
+KOMPASSI_CROWD_APPLICATION_NAME = 'atlasso'
+KOMPASSI_CROWD_APPLICATION_PASSWORD = 'secret'
+KOMPASSI_CROWD_SESSION_URL = '{KOMPASSI_CROWD_URL}/rest/usermanagement/1/session'.format(**locals())
+KOMPASSI_CROWD_COOKIE_NAME = 'crowd.token_key'
+KOMPASSI_CROWD_VALIDATION_FACTORS = {
+    'remote_address': lambda request: '127.0.0.1',
+    'X-Forwarded-For': lambda request: request.META['REMOTE_ADDR'],
+}
 
 LOGIN_URL = '/oauth2/login'
 LOGOUT_URL = '/logout'
+
+ATLASSO_DEFAULT_REDIRECT_URL = 'https://confluence.tracon.fi'
+ATLASSO_DEFAULT_LOGOUT_REDIRECT_URL = 'https://kompassi.eu/logout'

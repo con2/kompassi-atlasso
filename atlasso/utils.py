@@ -33,14 +33,9 @@ def crowd_session_url(token=None):
         return base_url
 
 
-def crowd_login(username, password=None, request=None):
+def crowd_login(username, request):
     """
-    Establishes a Crowd SSO session for the specified user. If a password is specified, it is fed
-    to Crowd and Crowd will perform authentication as well. If no password is specified, Crowd is
-    instructed not to validate the password.
-
-    If the login originates from the network, pass in request or remote_addr as a validation
-    factor for Crowd.
+    Establishes a Crowd SSO session for the specified user and Django request.
 
     Returns a dict that can be fed as kwargs to HttpResponse.set_cookie.
 
@@ -61,12 +56,10 @@ def crowd_login(username, password=None, request=None):
     # https://developer.atlassian.com/display/CROWDDEV/Crowd+REST+Resources#CrowdRESTResources-CrowdSSOTokenResource
 
     params = dict()
-    if password is None:
-        params['validate-password'] = 'false'
+    params['validate-password'] = False
 
     payload = {
         'username': username,
-        'password': password,
         'validation-factors': {
             'validationFactors': validation_factors
         },
@@ -78,11 +71,10 @@ def crowd_login(username, password=None, request=None):
     }
 
     log.debug(
-        u'Processing Crowd login attempt {with_password} for {username} validation factors: {validation_factors}'
+        u'Processing Crowd login attempt without password for {username} validation factors: {validation_factors}'
         .format(
             username=username,
             validation_factors=validation_factors,
-            with_password='with password' if password is not None else u'without password',
         )
     )
 

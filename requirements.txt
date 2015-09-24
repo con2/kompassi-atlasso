@@ -1,3 +1,4 @@
-Django==1.7.7
-gunicorn==19.3.0
-requests-oauthlib==0.4.2
+Django>=1.8
+gunicorn>=19
+requests-oauthlib>=0.4
+pyjade>3
