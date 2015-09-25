@@ -10,7 +10,7 @@ from requests import HTTPError
 from requests.auth import HTTPBasicAuth
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class CrowdError(RuntimeError):
@@ -70,7 +70,7 @@ def crowd_login(username, request):
         'Accept': 'application/json',
     }
 
-    log.debug(
+    logger.debug(
         u'Processing Crowd login attempt without password for {username} validation factors: {validation_factors}'
         .format(
             username=username,
@@ -94,11 +94,11 @@ def crowd_login(username, request):
         token = unicode(response_json['token'])
         expires = datetime.utcfromtimestamp(int(response_json['expiry-date']) / 1000.0)
     except Exception as e:
-        log.error(u'Crowd authentication failed for {username}: {e}'.format(username=username, e=e))
+        logger.exception(u'Crowd authentication failed for {username}: {e}'.format(username=username, e=e))
         unused, unused, traceback = sys.exc_info()
         raise CrowdError, e, traceback
 
-    log.debug(u'Crowd authentication succeeded for {username}'.format(username=username))
+    logger.debug(u'Crowd authentication succeeded for {username}'.format(username=username))
 
     return dict(
         settings.KOMPASSI_CROWD_COOKIE_ATTRS,
@@ -112,7 +112,7 @@ def crowd_logout(request):
     username = request.user.username
 
     if not token:
-        log.warning(u'No Crowd cookie at logout for {username}'.format(username=username))
+        logger.warning(u'No Crowd cookie at logout for {username}'.format(username=username))
         return None
 
     auth = crowd_application_auth()
@@ -123,7 +123,7 @@ def crowd_logout(request):
             auth=auth,
         )
     except Exception as e:
-        log.error(u'Crowd logout failed for {username}: {e}'.format(username=username, e=e))
+        logger.exception(u'Crowd logout failed for {username}: {e}'.format(username=username, e=e))
         # Fall through: Delete the cookie anyway.
 
     return dict(
