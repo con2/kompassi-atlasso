@@ -148,7 +148,7 @@ KOMPASSI_OAUTH2_SCOPE = ['read']
 KOMPASSI_API_V2_USER_INFO_URL = '{KOMPASSI_HOST}/api/v2/people/me'.format(**locals())
 KOMPASSI_API_V2_EVENT_INFO_URL_TEMPLATE = '{kompassi_host}/api/v2/events/{event_slug}'
 KOMPASSI_ADMIN_GROUP = 'admins'
-KOMPASSI_ACCESS_GROUP = 'crowd-users'
+KOMPASSI_ACCESS_GROUP = None
 
 KOMPASSI_CROWD_URL = 'https://crowd.tracon.fi/crowd'
 KOMPASSI_CROWD_APPLICATION_NAME = 'atlasso'
