@@ -15,7 +15,7 @@ def user_attrs_from_kompassi(kompassi_user):
         ('last_name', lambda u: u['surname']),
         ('is_superuser', lambda u: settings.KOMPASSI_ADMIN_GROUP in u['groups']),
         ('is_staff', lambda u: settings.KOMPASSI_ADMIN_GROUP in u['groups']),
-        ('is_active', lambda u: is_active,
+        ('is_active', lambda u: is_active),
         ('groups', lambda u: [Group.objects.get_or_create(name=group_name)[0] for group_name in u['groups']]),
     ])
 
