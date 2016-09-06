@@ -154,7 +154,7 @@ KOMPASSI_CROWD_APPLICATION_PASSWORD = env('KOMPASSI_CROWD_APPLICATION_PASSWORD',
 KOMPASSI_CROWD_SESSION_URL = '{KOMPASSI_CROWD_URL}/rest/usermanagement/1/session'.format(**locals())
 KOMPASSI_CROWD_VALIDATION_FACTORS = {
     'remote_address': lambda request: '127.0.0.1',
-    'X-Forwarded-For': lambda request: request.META['REMOTE_ADDR'],
+    'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
 }
 KOMPASSI_CROWD_COOKIE_ATTRS = dict(
     key='crowd.token_key',
