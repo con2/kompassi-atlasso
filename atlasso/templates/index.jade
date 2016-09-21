@@ -3,6 +3,15 @@ block content
   h1 Traconin Atlassian-tuotteiden kertakirjautumispalvelu
   p Tämä sivusto ei sisällä käyttäjän vaihdettavia osia.
   ul
-    li: a(href='{{ kompassi }}') Kompassi
+    li: a(href='{{ settings.KOMPASSI_HOST }}') Kompassi
     li: a(href='https://confluence.tracon.fi') Wiki
     li: a(href='https://jira.tracon.fi') JIRA
+
+  if request.user.is_anonymous
+    p Et ole kirjautunut sisään. <a href="{{ settings.KOMPASSI_HOST }}/login">Kirjaudu sisään…</a>
+  else
+    p Olet kirjautunut sisään käyttäjänä <em>{{ request.user.username }}</em>. <a href="{{ settings.LOGOUT_URL }}">Kirjaudu ulos tästä palvelusta ja Kompassista…</a>
+
+  hr
+
+  p: em <a href="https://github.com/tracon/kompassi-atlasso">AtlaSSO</a> &copy; 2014–2016 Santtu Pajukanta

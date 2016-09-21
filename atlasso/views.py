@@ -47,7 +47,5 @@ def logout_view(request):
 class AtlassoView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AtlassoView, self).get_context_data(**kwargs)
-        context.update(
-            kompassi=settings.KOMPASSI_HOST,
-        )
+        context.update(settings=settings) # I am such a lazy person
         return context
