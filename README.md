@@ -128,7 +128,7 @@ KOMPASSI_CROWD_VALIDATION_FACTORS = {
 
     The MIT License (MIT)
 
-    Copyright © 2014–2015 Santtu Pajukanta
+    Copyright © 2014–2016 Santtu Pajukanta
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
