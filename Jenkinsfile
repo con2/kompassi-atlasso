@@ -22,7 +22,7 @@ stage("Build") {
 
 stage("Push") {
   node {
-    sh "docker tag ${image} tracon/atlasso:latest && docker push tracon/atlasso:latest"
+    sh "docker tag ${image} tracon/atlasso:latest && docker push tracon/atlasso:latest && docker rmi ${image}"
   }
 }
 
