@@ -1,0 +1,11 @@
+djangoapp_secret_managed: false
+djangoapp_admins:
+  - Santtu Pajukanta <santtu@pajukanta.fi>
+
+ingress_public_hostname: atlasso.tracon.fi
+
+smtp_server: sr1.pahaip.fi
+smtp_default_from_email: root@tracon.fi
+
+ingress_letsencrypt_enabled: true
+ingress_letsencrypt_cluster_issuer: letsencrypt-prod

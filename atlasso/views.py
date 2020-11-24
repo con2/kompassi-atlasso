@@ -1,11 +1,10 @@
-# encoding: utf-8
-
 import logging
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_GET
 from django.views.generic.base import TemplateView
@@ -52,3 +51,7 @@ class AtlassoView(TemplateView):
             settings=settings
         )
         return context
+
+
+def status_view(request):
+    return JsonResponse({'status': 'OK'})

@@ -44,7 +44,7 @@ def crowd_login(username, request):
 
     validation_factors = []
 
-    for vf_name, vf_func in settings.KOMPASSI_CROWD_VALIDATION_FACTORS.iteritems():
+    for vf_name, vf_func in settings.KOMPASSI_CROWD_VALIDATION_FACTORS.items():
         validation_factors.append(dict(
             name=vf_name,
             value=vf_func(request),
@@ -71,7 +71,7 @@ def crowd_login(username, request):
     }
 
     logger.debug(
-        u'Processing Crowd login attempt without password for {username} validation factors: {validation_factors}'
+        'Processing Crowd login attempt without password for {username} validation factors: {validation_factors}'
         .format(
             username=username,
             validation_factors=validation_factors,
@@ -91,14 +91,14 @@ def crowd_login(username, request):
 
         response_json = response.json()
 
-        token = unicode(response_json['token'])
+        token = str(response_json['token'])
         expires = datetime.utcfromtimestamp(int(response_json['expiry-date']) / 1000.0)
     except Exception as e:
-        logger.exception(u'Crowd authentication failed for {username}: {e}'.format(username=username, e=e))
+        logger.exception('Crowd authentication failed for {username}: {e}'.format(username=username, e=e))
         unused, unused, traceback = sys.exc_info()
-        raise CrowdError, e, traceback
+        raise CrowdError(e).with_traceback(traceback)
 
-    logger.debug(u'Crowd authentication succeeded for {username}'.format(username=username))
+    logger.debug('Crowd authentication succeeded for {username}'.format(username=username))
 
     return dict(
         settings.KOMPASSI_CROWD_COOKIE_ATTRS,
@@ -112,7 +112,7 @@ def crowd_logout(request):
     username = request.user.username
 
     if not token:
-        logger.warning(u'No Crowd cookie at logout for {username}'.format(username=username))
+        logger.warning('No Crowd cookie at logout for {username}'.format(username=username))
         return None
 
     auth = crowd_application_auth()
@@ -123,7 +123,7 @@ def crowd_logout(request):
             auth=auth,
         )
     except Exception as e:
-        logger.exception(u'Crowd logout failed for {username}: {e}'.format(username=username, e=e))
+        logger.exception('Crowd logout failed for {username}: {e}'.format(username=username, e=e))
         # Fall through: Delete the cookie anyway.
 
     return dict(

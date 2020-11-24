@@ -32,9 +32,11 @@ class KompassiOAuth2AuthenticationBackend(object):
 
         user, created = User.objects.get_or_create(username=kompassi_user['username'])
 
-        for key, value in user_attrs_from_kompassi(kompassi_user).iteritems():
+        user_attrs = user_attrs_from_kompassi(kompassi_user)
+        groups = user_attrs.pop('groups', Group.objects.none())
+        user.groups.set(groups)
+        for key, value in user_attrs.items():
             setattr(user, key, value)
-
         user.save()
 
         if user.is_active:

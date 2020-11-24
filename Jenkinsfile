@@ -1,41 +1,29 @@
-def image = "tracon/atlasso:build-${env.BUILD_NUMBER}"
+pipeline {
+  agent any
 
-stage("Build") {
-  node {
-    checkout scm
-    sh "docker build --tag ${image} ."
+  environment {
+    PYTHONUNBUFFERED = "1"
+    SKAFFOLD_DEFAULT_REPO = "harbor.con2.fi/con2"
   }
-}
 
-// stage("Test") {
-//   node {
-//     sh """
-//       docker run \
-//         --rm \
-//         --link jenkins.tracon.fi-postgres:postgres \
-//         --env-file ~/.atlasso.env \
-//         ${image} \
-//         python manage.py test --keepdb
-//     """
-//   }
-// }
+  stages {
+    stage("Build") {
+      steps {
+        sh "emskaffolden -E production -- build --file-output build.json"
+      }
+    }
 
-stage("Push") {
-  node {
-    sh "docker tag ${image} tracon/atlasso:latest && docker push tracon/atlasso:latest && docker rmi ${image}"
+    stage("Deploy") {
+      steps {
+        sh "emskaffolden -E production -- deploy -n atlasso -a=build.json"
+      }
+    }
   }
-}
 
-stage("Deploy") {
-  node {
-    git url: "git@github.com:tracon/ansible-tracon"
-    sh """
-      ansible-playbook \
-        --vault-password-file=~/.vault_pass.txt \
-        --user root \
-        --limit neula.kompassi.eu \
-        --tags atlasso-deploy \
-        tracon.yml
-    """
+  post {
+    always {
+      archiveArtifacts "build.json"
+      archiveArtifacts "kubernetes/template.compiled.yaml"
+    }
   }
 }

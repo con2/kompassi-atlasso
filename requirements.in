@@ -1,0 +1,6 @@
+django-environ
+Django
+pypugjs
+requests-oauthlib
+gunicorn
+psycopg2

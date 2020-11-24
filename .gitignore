@@ -9,3 +9,5 @@ virtualenv/
 tmp/
 .sublime-*
 node_modules/
+*.local.yaml
+*.compiled.yaml

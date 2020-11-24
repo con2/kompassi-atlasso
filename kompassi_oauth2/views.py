@@ -1,10 +1,8 @@
-# encoding: utf-8
-
 from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import redirect
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import authenticate, login
 
 from requests_oauthlib import OAuth2Session
@@ -47,4 +45,4 @@ class CallbackView(View):
             login(request, user)
             return redirect(next_url if next_url else '/')
         else:
-            return redirect('error_view')
+            return HttpResponse('OAuth2 login failed', status=403)
