@@ -30,6 +30,7 @@ class CallbackView(View):
             return HttpResponse('OAuth2 callback accessed outside OAuth2 authorization flow', status=400)
 
         session = get_session(request, state=request.session['oauth_state'])
+
         token = session.fetch_token(settings.KOMPASSI_OAUTH2_TOKEN_URL,
             client_secret=settings.KOMPASSI_OAUTH2_CLIENT_SECRET,
             authorization_response=request.build_absolute_uri(),

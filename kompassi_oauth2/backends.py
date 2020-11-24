@@ -3,11 +3,6 @@ from django.conf import settings
 
 
 def user_attrs_from_kompassi(kompassi_user):
-    if settings.KOMPASSI_ACCESS_GROUP is not None:
-        is_active = settings.KOMPASSI_ACCESS_GROUP in kompassi_user['groups']
-    else:
-        is_active = True
-
     return dict((django_key, accessor_func(kompassi_user)) for (django_key, accessor_func) in [
         ('username', lambda u: u['username']),
         ('email', lambda u: u['email']),
@@ -15,13 +10,12 @@ def user_attrs_from_kompassi(kompassi_user):
         ('last_name', lambda u: u['surname']),
         ('is_superuser', lambda u: settings.KOMPASSI_ADMIN_GROUP in u['groups']),
         ('is_staff', lambda u: settings.KOMPASSI_ADMIN_GROUP in u['groups']),
-        ('is_active', lambda u: is_active),
         ('groups', lambda u: [Group.objects.get_or_create(name=group_name)[0] for group_name in u['groups']]),
     ])
 
 
 class KompassiOAuth2AuthenticationBackend(object):
-    def authenticate(self, oauth2_session=None, **kwargs):
+    def authenticate(self, request, oauth2_session=None, **kwargs):
         if oauth2_session is None:
             # Not ours (password login)
             return None
@@ -39,10 +33,7 @@ class KompassiOAuth2AuthenticationBackend(object):
             setattr(user, key, value)
         user.save()
 
-        if user.is_active:
-            return user
-        else:
-            return None
+        return user
 
     def get_user(self, user_id):
         try:
