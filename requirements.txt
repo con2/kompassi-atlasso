@@ -36,7 +36,7 @@ six==1.15.0
     # via pypugjs
 sqlparse==0.4.1
     # via django
-urllib3==1.26.2
+urllib3==1.26.3
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
