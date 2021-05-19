@@ -1,8 +1,5 @@
 # Note: For {dev.,beta.,}conikuvat.fi and larppikuvat.fi, djangoapp_tag is overridden in Jenkinsfile.
 
-# App specific settings
-infokala_default_event: example
-
 # Kompassi OAuth2 (NOTE: do not set if djangoapp_secret_managed: false)
 kompassi_client_id: ''
 kompassi_client_secret: ''
@@ -12,6 +9,9 @@ crowd_application_password: ''
 # Note: If you use Skaffold/Emskaffolden, leave these at defaults and let Skaffold manage the images
 djangoapp_name: atlasso
 djangoapp_image: !Var djangoapp_name
+
+# Leave empty if you have kubernetes-secret-generator installed in your cluster and want to have it generate a SECRET_KEY for you
+djangoapp_secret_key: ''
 
 # Whether the secret of the name !Var djangoapp_name is managed by these templates or manually created
 djangoapp_secret_managed: true
